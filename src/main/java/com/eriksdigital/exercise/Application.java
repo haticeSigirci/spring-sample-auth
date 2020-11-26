@@ -1,19 +1,17 @@
 package com.eriksdigital.exercise;
 
 import com.eriksdigital.exercise.security.AuthConfig;
+import com.eriksdigital.exercise.security.CustomAuthorizationServerConfigurer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 
 
-@SpringBootApplication
-@EnableAuthorizationServer
+@SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 @EnableResourceServer
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-@Import(AuthConfig.class)
+@Import({AuthConfig.class, CustomAuthorizationServerConfigurer.class})
 public class Application {
 
     public static void main(String[] args) {

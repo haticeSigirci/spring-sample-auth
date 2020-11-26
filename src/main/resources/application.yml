@@ -4,15 +4,8 @@ spring:
       database: orderDb
       port: 27017
       host: localhost
-  security:
-    oauth2:
-      authorization:
-        check-token-access: isAuthenticated()
-      client:
-        client-id: first-client
-        client-secret: noonewilleverguess
-        access-token-uri: http://localhost:8080/oauth/token
-        scope: read,write
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 
 logging:
   pattern:
@@ -26,3 +19,12 @@ logging:
     name: logs/dev_app.log
 
 security.enable-csrf: false
+security.user.name: "hatice"
+security.user.password: "password"
+security.user.roles: "USER"
+
+security.oauth.client: "client"
+security.oauth.secret: "{noop}secret"
+security.oauth.roles: "USER"
+security.oauth.grant-type: "password"
+security.oauth.refresh-token: "refresh-token"

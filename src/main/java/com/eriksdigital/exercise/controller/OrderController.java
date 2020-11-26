@@ -2,15 +2,14 @@ package com.eriksdigital.exercise.controller;
 
 import com.eriksdigital.exercise.exception.OrderNotFoundException;
 import com.eriksdigital.exercise.model.Order;
+import com.eriksdigital.exercise.service.OrderService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import com.eriksdigital.exercise.service.OrderService;
 
 @RestController
 public class OrderController {
-
-    //todo could be changeable as orderdto
 
     private static final Logger logger = LogManager.getLogger(OrderController.class);
 
@@ -20,8 +19,8 @@ public class OrderController {
         this.service = service;
     }
 
-    @RequestMapping(value = "/orders", method = {RequestMethod.GET, RequestMethod.POST})
-    Order getOneOrder(@RequestParam(value = "id") Long id) {
+    @GetMapping(value = "/orders/{id}")
+    Order getOneOrder(@PathVariable (value = "id") Long id) {
         return service.getOrder(id).orElseThrow(() -> {
             logger.error("Order could not found {} ", id);
             return new OrderNotFoundException(id);
@@ -30,6 +29,7 @@ public class OrderController {
     }
 
     @PostMapping("/orders")
+    @ResponseStatus(HttpStatus.CREATED)
     Order newOrder(@RequestBody Order order) {
         return service.createOrder(order);
     }

@@ -8,8 +8,6 @@ import org.springframework.stereotype.Repository;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
-//todo could be changeable as another microservices for user
-
 @Repository
 public class UserRepository {
 

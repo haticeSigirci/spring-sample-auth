@@ -30,8 +30,13 @@ To start the app locally make the following steps:
 * run whole docker and app
     * docker-compose up -d
     
-If you would like to stop the app, run the docker command
+* If you would like to stop the app, run the docker command
     * docker-compose down
+    
+After run the application locally, client credentials should get from yml file 
+and use that to make request to get new oauth token
+* security.oauth.client = client
+* security.oauth.secret = secret
     
     
 #Documentation

@@ -16,9 +16,9 @@ import java.time.LocalDateTime;
 public class Order {
 
     @Id
-    private long id;
+    private long id; //autoincrement id will not come from request
 
-    private String status; //status of order could be enum todo
+    private OrderType status;
 
     private double totalPrice;
 

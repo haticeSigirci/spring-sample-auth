@@ -16,6 +16,9 @@ public class OrderServiceTest {
     @Mock
     OrderRepository orderRepository;
 
+    @Mock
+    KafkaService kafkaService;
+
     private OrderService orderService;
 
     private Order order;
@@ -23,7 +26,7 @@ public class OrderServiceTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        orderService = new OrderService(orderRepository);
+        orderService = new OrderService(orderRepository, kafkaService);
         order = SampleProvider.createSampleOrder();
     }
 

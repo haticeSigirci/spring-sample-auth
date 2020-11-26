@@ -2,6 +2,7 @@ package com.eriksdigital.exercise.controller;
 
 import com.eriksdigital.exercise.Application;
 import com.eriksdigital.exercise.model.Order;
+import com.eriksdigital.exercise.service.KafkaService;
 import com.eriksdigital.exercise.service.OrderService;
 import com.eriksdigital.exercise.util.SampleProvider;
 import lombok.SneakyThrows;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,8 +24,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = Application.class)
 @AutoConfigureMockMvc
+@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
 public class OrderControllerTest {
 
     private MockMvc mockMvc;
@@ -43,6 +45,8 @@ public class OrderControllerTest {
     private FilterChainProxy filterChainProxy;
 
     private OrderService orderService;
+
+    private KafkaService kafkaService;
 
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
@@ -60,6 +64,7 @@ public class OrderControllerTest {
         accessToken = SampleProvider.obtainAccessToken(mockMvc);
         headers = SampleProvider.setTokenToHeader();
         orderService = mock(OrderService.class);
+        kafkaService = mock(KafkaService.class);
     }
 
     @Test
@@ -68,6 +73,7 @@ public class OrderControllerTest {
 
         Optional<Order> order = Optional.of(SampleProvider.createSampleOrder());
 
+        doNothing().when(kafkaService).sendEvent(order.get());
         when(orderService.getOrder(1L)).thenReturn(order);
 
         mockMvc.perform(get("/orders/{id}", 1L)
@@ -83,7 +89,7 @@ public class OrderControllerTest {
     public void createOrderWhenOrderIsValid() {
 
         Order order = SampleProvider.createSampleOrder();
-
+        doNothing().when(kafkaService).sendEvent(order);
         when(orderService.createOrder(order)).thenReturn(order);
 
         mockMvc
@@ -100,6 +106,10 @@ public class OrderControllerTest {
     @Test
     @SneakyThrows
     public void updateOrderWhenOrderIsValid() {
+
+        Order order = SampleProvider.createSampleOrder();
+        doNothing().when(kafkaService).sendEvent(order);
+
         mockMvc.perform(put("/orders/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(ORDER)

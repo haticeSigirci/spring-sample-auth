@@ -17,8 +17,11 @@ public class OrderService {
 
     private final OrderRepository repository;
 
-    OrderService(OrderRepository repository) {
+    private final KafkaService kafkaService;
+
+    OrderService(OrderRepository repository, KafkaService kafkaService) {
         this.repository = repository;
+        this.kafkaService = kafkaService;
     }
     public Optional<Order> getOrder(Long id) {
         return repository.findOrderById(id) == null ? Optional.empty() : Optional.of(repository.findOrderById(id));
@@ -26,10 +29,12 @@ public class OrderService {
 
     public Order createOrder(Order newOrder) {
         logger.info("Order Created with id: {}", newOrder.getId());
+        kafkaService.sendEvent(newOrder);
         return repository.save(newOrder);
     }
 
     public Order updateOrder(Order updateOrder, Long id) {
+        kafkaService.sendEvent(updateOrder);
         return getOrder(id)
                 .map(order -> {
                     logger.info("Order Updated with id: {}", updateOrder.getId());

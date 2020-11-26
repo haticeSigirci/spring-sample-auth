@@ -38,7 +38,14 @@ and use that to make request to get new oauth token
 * security.oauth.client = client
 * security.oauth.secret = secret
     
-    
+To see the kafka events run the commands locally:
+* To run zookeeper:
+    *  bin/zookeeper-server-start.sh config/zookeeper.properties
+* To run kafka server:
+    *   bin/kafka-server-start.sh config/server.properties
+* To see the produced events in order_events topic:
+    *   bin/kafka-console-consumer.sh --topic order_events --from-beginning --bootstrap-server localhost:9092
+
 #Documentation
 
 To see the swagger documentation, go to pages
@@ -51,3 +58,6 @@ To see the swagger documentation, go to pages
 * Order
 
 #Future Improvements
+
+As a result, events could listen from the topic from another service like payment-service
+ and do another related jobs like payment calculation.
